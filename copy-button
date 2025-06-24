@@ -1,0 +1,26 @@
+html
+CopyEdit
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Copy Link</title>
+    <style>
+      body { display: flex; justify-content: center; align-items: center; height: 100%; margin: 0; }
+      button { padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <button onclick="copyToClipboard()">Copy Link</button>
+    <script>
+      function copyToClipboard() {
+        const url = "https://yourcompany.sharepoint.com/sites/project/documents/client-folder";
+        navigator.clipboard.writeText(url).then(() => {
+          alert("Link copied to clipboard!");
+        }).catch(err => {
+          alert("Failed to copy link: " + err);
+        });
+      }
+    </script>
+  </body>
+</html>
+
