@@ -1,35 +1,185 @@
+
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Copy Link</title>
     <style>
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /* Use vh (viewport height) to ensure the body fills the entire screen */
-        height: 100vh;
-        margin: 0;
-      }
-      button {
-        padding: 12px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
+        /* * --- STYLES ---
+         * No external libraries needed. This is all self-contained.
+         */
+        
+        /* Basic reset and font settings */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #f8f9fa; /* A light grey background */
+        }
+
+        /* Centering container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Text styling */
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #666;
+            max-width: 400px;
+            margin-bottom: 24px;
+        }
+
+        /* The Button Style */
+        .copy-button {
+            background-color: #007bff; /* A nice, clean blue */
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Space between icon and text */
+        }
+
+        /* Hover effect */
+        .copy-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        /* Click effect */
+        .copy-button:active {
+            transform: scale(0.98); /* Slightly shrink on click */
+        }
+        
+        /* Confirmation Message */
+        .confirmation {
+            margin-top: 16px;
+            color: #28a745; /* Green success color */
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            /* Ensure it doesn't take up space when hidden */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .confirmation.visible {
+            opacity: 1;
+            height: auto; /* Take up space when visible */
+        }
     </style>
-  </head>
-  <body>
-    <button onclick="copyToClipboard()">Copy Link</button>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Share Link with Client</h1>
+        <p>Click the button to copy the link, then paste it in a message to your client.</p>
+
+        <!-- The Button -->
+        <button id="copyButton" class="copy-button">
+             <!-- Simple SVG icon for clipboard -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span>Copy Client Link</span>
+        </button>
+
+        <!-- Confirmation Message -->
+        <div id="confirmationMessage" class="confirmation">
+            <p>✅ Link copied to clipboard!</p>
+        </div>
+    </div>
+
     <script>
-      function copyToClipboard() {
-        const url = "https://tomsmcnally.sharepoint.com/:b:/s/archive-2025-03-28T131757Z/EXFUtSU8xg9LofGbHWm5ucABc5icLcXKVkEak1nGHtq1Dg?e=K8fbp5";
-        navigator.clipboard.writeText(url).then(() => {
-          alert("Link copied to clipboard!");
-        }).catch(err => {
-          alert("Failed to copy link: " + err);
+        /******************************************************************
+         *
+         * --- CONFIGURATION ---
+         *
+         * Instructions:
+         * 1. Find the 'linkToCopy' variable below.
+         * 2. Change the URL inside the quotes to the link you want to share.
+         *
+         ******************************************************************/
+
+        const linkToCopy = "https://tomsmcnally.sharepoint.com/:b:/s/archive-2025-03-28T131757Z/EXFUtSU8xg9LofGbHWm5ucABc5icLcXKVkEak1nGHtq1Dg?e=K8fbp5";
+
+        /******************************************************************
+         * --- END OF CONFIGURATION ---
+         *
+         * You don't need to change anything below this line.
+         *
+         ******************************************************************/
+
+
+        // --- DOM Element Selection ---
+        const copyButton = document.getElementById('copyButton');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+
+        // --- Event Listener ---
+        copyButton.addEventListener('click', () => {
+            copyTextToClipboard(linkToCopy);
         });
-      }
+
+        /**
+         * Copies the provided text to the user's clipboard using a fallback method.
+         * @param {string} text - The text to be copied.
+         */
+        function copyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.style.position = 'absolute';
+            textArea.style.left = '-9999px'; // Move it off-screen
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showConfirmation();
+                }
+            } catch (err) {
+                console.error('Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        /**
+         * Displays the confirmation message and then fades it out.
+         */
+        function showConfirmation() {
+            // Show the message
+            confirmationMessage.classList.add('visible');
+
+            // Hide the message after 3 seconds
+            setTimeout(() => {
+                confirmationMessage.classList.remove('visible');
+            }, 3000);
+        }
     </script>
-  </body>
+
+</body>
 </html>
