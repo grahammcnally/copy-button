@@ -1,36 +1,89 @@
+<iframe
+    srcdoc="
+        <!DOCTYPE html>
+        <html lang=&quot;en&quot;>
+        <head>
+            <meta charset=&quot;UTF-8&quot;>
+            <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+            <title>Copy Link to Clipboard</title>
+            <script src=&quot;https://cdn.tailwindcss.com&quot;></script>
+            <link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;>
+            <link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin>
+            <link href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&quot; rel=&quot;stylesheet&quot;>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                    /* Ensure content is centered inside the iframe */
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    margin: 0;
+                }
+            </style>
+        </head>
+        <body class=&quot;bg-gray-50&quot;>
+            <div class=&quot;w-full max-w-md mx-auto p-6 text-center&quot;>
+                <h1 class=&quot;text-2xl font-bold text-gray-800 mb-2&quot;>Share Link with Client</h1>
+                <p class=&quot;text-gray-600 mb-6&quot;>Click the button below to copy the secure link to your clipboard. You can then paste it into an email or message for the client.</p>
+                <button id=&quot;copyButton&quot; class=&quot;w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 ease-in-out transform hover:-translate-y-1&quot;>
+                    <span class=&quot;flex items-center justify-center&quot;>
+                        <svg class=&quot;w-6 h-6 mr-3&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z&quot;></path></svg>
+                        Copy Client Link
+                    </span>
+                </button>
+                <div id=&quot;confirmationMessage&quot; class=&quot;mt-4 p-3 bg-green-100 text-green-800 border border-green-200 rounded-lg text-center opacity-0 transition-opacity duration-500&quot;>
+                    <p>✅ Link copied to clipboard!</p>
+                </div>
+            </div>
+            <script>
+                const linkToCopy = &quot;https://tomsmcnally.sharepoint.com/:b:/s/archive-2025-03-28T131757Z/EXFUtSU8xg9LofGbHWm5ucABc5icLcXKVkEak1nGHtq1Dg?e=K8fbp5&quot;; 
+                const copyButton = document.getElementById('copyButton');
+                const confirmationMessage = document.getElementById('confirmationMessage');
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Copy Link</title>
-    <style>
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /* Use vh (viewport height) to ensure the body fills the entire screen */
-        height: 100vh;
-        margin: 0;
-      }
-      button {
-        padding: 12px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <button onclick="copyToClipboard()">Copy Link</button>
-    <script>
-      function copyToClipboard() {
-        const url = "https://tomsmcnally.sharepoint.com/:b:/s/archive-2025-03-28T131757Z/EXFUtSU8xg9LofGbHWm5ucABc5icLcXKVkEak1nGHtq1Dg?e=K8fbp5";
-        navigator.clipboard.writeText(url).then(() => {
-          alert("Link copied to clipboard!");
-        }).catch(err => {
-          alert("Failed to copy link: " + err);
-        });
-      }
-    </script>
-  </body>
-</html>
+                copyButton.addEventListener('click', () => {
+                    copyTextToClipboard(linkToCopy);
+                });
+
+                function copyTextToClipboard(text) {
+                    const textArea = document.createElement(&quot;textarea&quot;);
+                    textArea.style.position = 'fixed';
+                    textArea.style.top = 0;
+                    textArea.style.left = 0;
+                    textArea.style.width = '2em';
+                    textArea.style.height = '2em';
+                    textArea.style.padding = 0;
+                    textArea.style.border = 'none';
+                    textArea.style.outline = 'none';
+                    textArea.style.boxShadow = 'none';
+                    textArea.style.background = 'transparent';
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (successful) {
+                            showConfirmation();
+                        } else {
+                            console.error('Fallback: Oops, unable to copy');
+                        }
+                    } catch (err) {
+                        console.error('Fallback: Oops, unable to copy', err);
+                    }
+                    document.body.removeChild(textArea);
+                }
+
+                function showConfirmation() {
+                    confirmationMessage.style.opacity = '1';
+                    setTimeout(() => {
+                        confirmationMessage.style.opacity = '0';
+                    }, 3000);
+                }
+            <\/script>
+        </body>
+        </html>
+    "
+    style="width: 100%; height: 350px; border: none;"
+    title="Clipboard Button Iframe">
+</iframe>
